@@ -20,7 +20,7 @@ class Button extends React.Component {
  
     render(){
         return (
-            <StyledButton {...this.props} onClick={this.props.onClick}>
+            <StyledButton>
                 {this.props.children}
            </StyledButton>
         )

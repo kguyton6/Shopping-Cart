@@ -9,15 +9,33 @@ import { connect } from 'react-redux'
 import { getUserInfo } from '../ducks/reducer'
 import image from './assets/close.png'
 
+
+
 const Container = styled.div`
   display: flex;
   width: 100vw;
   flex-direction: column;
   height: 100vh;
   align-items: center;
-
-
 `
+
+
+const CounterBox = styled.span`
+    color: black;
+    /* font-weight: bold; */
+    position: absolute;
+  top: 5px;
+  right: 0px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: #ffffffea;
+  border: black solid thin;
+  z-index: 10;
+  text-align: center;
+  font-size: 13px;
+
+  `
 const Title = styled.h1`
 font-size: 32px;
 font-weight: bold;
@@ -25,6 +43,7 @@ text-align: center;
 letter-spacing: 1px;
 font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 margin-top: 50px;
+margin-bottom: 5%;
 `
 const Icon = styled.img`
 position: absolute;
@@ -45,28 +64,20 @@ const Wrapper = styled.div`
 
 
 `
-const Input = styled.input`
-  width: 25px;
-  font-size: 14px;
-  position: relative;
-  margin-left: 5%;
-  text-decoration: none;
-  height: 25px;
 
-`
 const Img = styled.img`
     margin-left: 10px;
     cursor: point;
 `
 
-const CheckOut = styled.button`
+const StyledButton = styled.button`
     width: ${props => props.width || '60%'};
     height: ${props => props.height || '40px'};
-    background-color:${props => props.background  || 'rgb(38, 240, 206)'};
+    background-color:${props => props.background || 'rgb(38, 240, 206)'};
     box-shadow: ${props => props.shadow || '1px 1.5px 1.5px 1px rgb(133, 133, 133)'};
-    border: none;
+    border: ${props => props.border || 'none'};
     font-size: 22px;
-    color:black;
+    color:${props => props.color || 'black'};
     font-weight: bold; 
     letter-spacing: 2px; 
     position: ${props => props.position || 'unset'};
@@ -84,11 +95,14 @@ class Home extends Component {
       showCart: false,
       icon: { cart },
       user: [],
-      count: 1,
-      items: 0
+      quantity: [],
+      count: 0
+
+
 
     }
 
+    this.addToCart = this.addToCart.bind(this)
     this.updateCart = this.updateCart.bind(this)
   }
 
@@ -137,7 +151,7 @@ class Home extends Component {
     let product = [];
     for (let i in products) {
       product.push(
-        <React.Fragment>
+        <React.Fragment key={i}>
           <List
             product={products[i]}
             onClick={() => this.addToCart(products[i].product_id)}
@@ -149,18 +163,22 @@ class Home extends Component {
     return product
   }
 
-  showCart = () => {
+  showCart = (count) => {
     let product = []
     if (this.state.shoppingCart.length > 0) {
       let products = this.state.shoppingCart
       for (let i in products) {
+        var total = products[i].price * products[i].quantity
         product.push(
-          <React.Fragment>
+          <React.Fragment key={i}>
             <List product={products[i]}
+              count={count}
+              total={total}
               onClick={() => this.updateCart(products[i].product_id)}
-              name={'Update'} />
-            <Input defaultValue={products[i].quantity} onChange={(e) => this.updateCount(e.target.value)} />
-            <Img width='5px' height='5px' src={image} alt='x' onClick={() => this.deleteItem(products[i].id)} />
+              name={'Update'}
+              quantity={products[i].quantity} 
+              showCart={this.state.showCart} />
+            <Img width='15px' height='15px' src={image} alt='x' onClick={() => this.deleteItem(products[i].id)} />
           </React.Fragment>
         )
       }
@@ -178,35 +196,60 @@ class Home extends Component {
     axios.delete(`/api/delete/${id}`)
       .then((res) => this.setState({ shoppingCart: res.data }))
   }
+
+
+  total = (cart, total) => {
+    var numbers = []
+    for (let i in cart) {
+      numbers.push(cart[i].quantity)
+
+    }
+    return numbers
+  }
+
+  getSum = (total, num) => {
+    return total + Math.round(num);
+  }
+
+
   render() {
-    console.log(this.props.user, this.state)
+    let num = this.total(this.state.shoppingCart)
+    var newNum = num.reduce(this.getSum, 0)
+    console.log(newNum)
     return (
 
       <Container>
         <Header
-          Button={CheckOut}
+          Button={StyledButton}
           reload={this.componentDidMount}
         >
           {this.state.showCart ?
             <Icon src={house} onClick={() => this.setState({ showCart: false })} /> :
-            <Icon src={cart} onClick={() => this.setState({ showCart: true })} />}
+            <div style={{ position: 'relative' }}>
+             {newNum > 0 ? <CounterBox>{newNum}</CounterBox> : false }
+              <Icon src={cart} onClick={() => this.setState({ showCart: true })} />
+            </div>}
+
         </Header>
 
         {this.state.showCart ?
           <React.Fragment>
             <Title>{this.state.shoppingCart.length > 0 ? 'Your Cart' : 'Cart is empty'}</Title>
             <Wrapper>
-              {this.showCart()}
-              <CheckOut 
-              width='150px' 
-              position='absolute' 
-              bottom='10%'
-              right='5%'
-              background='white'
-
-              onClick={this.deleteCart}>Check Out</CheckOut>
+              {this.showCart(newNum)}
+              <StyledButton
+                className='styled-button'
+                color='rgb(38, 240, 206)'
+                width='150px'
+                position='absolute'
+                bottom='10%'
+                right='5%'
+                background='white'
+                onClick={this.deleteCart}
+              > Check Out</StyledButton>
             </Wrapper>
-          </React.Fragment> :
+          </React.Fragment>
+          :
           <React.Fragment>
             <Title>Products</Title>
             <Wrapper>

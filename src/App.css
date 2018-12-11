@@ -37,3 +37,21 @@ li {
     transform: rotate(360deg);
   }
 }
+
+span.price {
+  float: right;
+  color: grey;
+}
+.container {
+  background-color: #ffffffea;
+  padding: 5px 20px 15px 20px;
+  border: 1px solid lightgrey;
+  border-radius: 3px;
+}
+.col-25 {
+  -ms-flex: 25%; /* IE10 */
+  flex: 25%;
+  width: 200px;
+  right: 5%;
+  position: absolute;
+}

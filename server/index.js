@@ -57,10 +57,11 @@ app.post('/auth/login', async(req, res) => {
 app.get("/api/products", ctrl.get_products)
 app.get('/api/cart', ctrl.get_cart)
 app.post('/api/signup', ctrl.create_user)
-app.post("/api/cart/:id", ctrl.create_cart);
+app.post("/api/cart/:id", ctrl.create_cart)
 app.put('/api/cart/:id', ctrl.update_count)
 app.delete('/api/delete/:id', ctrl.delete_item)
 app.delete('/api/delete', ctrl.delete_cart)
+
 const Port = SERVER_PORT || 4000
 
 app.listen(Port, () => {

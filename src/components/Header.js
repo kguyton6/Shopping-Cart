@@ -2,7 +2,7 @@ import React from 'react'
 import Login from './Login'
 import styled from 'styled-components'
 import logo from './assets/logo.jpg'
-import axios from 'axios'
+
 
 
 const StyledHeader = styled.header`
@@ -32,26 +32,15 @@ const loginContainer = {
 
 }
 
-const Title = styled.h1 `
-    font-size: 32px;
-  font-weight: bold;
-  text-align: center;
-  letter-spacing: 1px;
-  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-    
-`
-class Header extends React.Component {
-    state = {
-        loginModal: false,
-        
 
-    }
+class Header extends React.Component {
+    state = { loginModal: false  }
 
     toggleModal = () => {
         this.setState(prevState => {
-            return { loginModal: !prevState.loginModal}
+            return { loginModal: !prevState.loginModal }
         })
-       return this.props.reload()
+        this.props.reload() 
     }
 
     
